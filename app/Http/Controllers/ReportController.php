@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Exports\RevenueExport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-
 class ReportController extends Controller
 {
     public function revenue(Request $request)
