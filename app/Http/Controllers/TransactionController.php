@@ -7,11 +7,15 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\TransactionDetail;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB; // untuk query 
+use Illuminate\Support\Facades\DB; // untuk query
+use Illuminate\Support\Facades\Log;
+
 
 class TransactionController extends Controller
 {
-    public function index(){
+    public function index()
+    {
+        // Fetch the latest transactions
         $transactions = Transaction::latest()->get();
 
         return view('transactions.index', compact('transactions'));
@@ -19,10 +23,21 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
+        // Validate the request
+        $validated = $request->validate([
+            'nama_customer' => 'required|string',
+            'metode_bayar' => 'required|string',
+            'total' => 'required|numeric',
+            'accept' => 'required|numeric',
+            'return' => 'required|numeric',
+            'products' => 'required|array',
+            'products.*.quantity' => 'required|integer|min:1', // Ensure quantity is provided
+        ]);
+
         $params = $request->all();
 
         // Transaction logic inside a DB transaction
-        $transaction = \DB::transaction(function() use ($params) {
+        $transaction = DB::transaction(function() use ($params) {
             // Generate transaction parameters
             $transactionParams = [
                 'transaction_code' => 'J-10' . mt_rand(1, 1000),
@@ -44,7 +59,7 @@ class TransactionController extends Controller
                 // Proses transaksi dan detail produk
                 $orderProductParams = [
                     'transaction_id' => $transaction->id,
-                    'id_produk' => $product->id,
+                    'id_produk' => $product->id_produk,
                     'qty' => $productData['quantity'], // Ensure the updated quantity is used
                     'nama_produk' => $product->nama_produk,
                     'base_price' => $product->harga_produk,
@@ -90,24 +105,25 @@ class TransactionController extends Controller
             'alert-type' => 'danger'
         ]);
     }
-   
-    
-    public function show(Transaction $transaction){
+
+    public function show(Transaction $transaction)
+    {
         return view('transactions.show', compact('transaction'));
     }
 
-    public function destroy(Transaction $transaction){
-       
+    public function destroy(Transaction $transaction)
+    {
+        // Delete the transaction
         $transaction->delete();
 
         return redirect()->back()->with([
-            'message' => 'success delete',
+            'message' => 'Success delete',
             'alert-type' => 'danger'
         ]);
     }
 
-    public function print_struck(Transaction $transaction){        
-        
+    public function print_struck(Transaction $transaction)
+    {
         return view('transactions.nota', compact('transaction'));
     }
 }

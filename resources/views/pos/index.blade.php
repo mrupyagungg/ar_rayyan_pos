@@ -88,36 +88,24 @@
                             </div>
                         </div>
                     </form>
-                    
-                    
                 </div>
-                                            
-                
             </div>
-            <!--/Datatable-->
-
         </div>
     </div>
     <script>
-        document.getElementById('cancel-cart').addEventListener('click', function() {
-            // Refresh halaman ketika tombol Cancel diklik
-            window.location.reload();
-        });
-    </script>
-    <script>
-        document.getElementById('barcode-input').addEventListener('keyup', function(event) {
+document.getElementById('barcode-input').addEventListener('keyup', function(event) {
     let barcode = event.target.value.trim();
 
     if (barcode.length >= 3) {
         let foundProduct = null;
 
         @foreach($products as $product)
-            if ("{{ $product->kode }}" === barcode) {
+            if ("{{ $product->kode_produk }}" === barcode) {
                 foundProduct = {
-                    id: "{{ $product->id }}",
+                    id_produk: "{{ $product->id_produk }}",
                     name: "{{ $product->nama_produk }}",
                     price: "{{ $product->harga_produk }}",
-                    quantity: 1,
+                    quantity: 1, // Default value
                     stock: "{{ $product->detailProduct->sum('stok') }}" // Sum of all stock from the 'detail_product' table
                 };
             }
@@ -126,46 +114,48 @@
         if (foundProduct) {
             let cartProducts = document.getElementById('cart-products');
             let cartProductsHidden = document.getElementById('cart-products-hidden');
-            let existingRow = document.getElementById(`cart-product-${foundProduct.id}`);
+            let existingRow = document.getElementById(`cart-product-${foundProduct.id_produk}`);
 
             if (existingRow) {
-                // If product is already in the cart, increase the quantity
+                // If product is already in the cart, update the quantity
                 let quantityInput = existingRow.querySelector('input');
-                let newQuantity = parseInt(quantityInput.value) + 1; // Increase quantity
+                let newQuantity = parseInt(quantityInput.value) || 1; // Use current value or default to 1
+                newQuantity++; // Increment the quantity
                 quantityInput.value = newQuantity;
 
                 // Update the hidden input field for quantity
-                let hiddenInput = document.querySelector(`input[name='products[${foundProduct.id}][quantity]']`);
+                let hiddenInput = document.querySelector(`input[name='products[${foundProduct.id_produk}][quantity]']`);
                 hiddenInput.value = newQuantity; // Update hidden input with the new quantity
             } else {
-                // Jika produk belum ada di keranjang, tambahkan baris baru
+                // If product is not in the cart, create a new row
                 let row = document.createElement('tr');
-                row.setAttribute('id', `cart-product-${foundProduct.id}`);
+                row.setAttribute('id', `cart-product-${foundProduct.id_produk}`);
                 row.innerHTML = `
                     <td>${foundProduct.name}</td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="updateQuantity(${foundProduct.id}, -1)">
-                                <i class="fas fa-minus"></i> <!-- Ikon minus -->
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="updateQuantity(${foundProduct.id_produk}, -1)">
+                                <i class="fas fa-minus"></i> <!-- Minus icon -->
                             </button>
-                            <input type="number" name="products[${foundProduct.id}][quantity]" value="${foundProduct.quantity}" class="form-control mx-2" onchange="updateHiddenInput(${foundProduct.id})" style="width: 60px;">
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="updateQuantity(${foundProduct.id}, 1)">
-                                <i class="fas fa-plus"></i> <!-- Ikon plus -->
+                            <input type="number" name="products[${foundProduct.id_produk}][quantity]" value="${foundProduct.quantity}" class="form-control mx-2" onchange="updateHiddenInput(${foundProduct.id_produk})" style="width: 60px;">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="updateQuantity(${foundProduct.id_produk}, 1)">
+                                <i class="fas fa-plus"></i> <!-- Plus icon -->
                             </button>
                         </div>
                     </td>
                     <td class="text-right">${foundProduct.price}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm cancel-btn" data-id="${foundProduct.id}">Cancel</button></td>
+                    <td><button type="button" class="btn btn-danger btn-sm cancel-btn" data-id="${foundProduct.id_produk}">Cancel</button></td>
                 `;
                 cartProducts.appendChild(row);
 
                 // Add hidden input for backend processing
                 let hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
-                hiddenInput.name = `products[${foundProduct.id}][quantity]`;
+                hiddenInput.name = `products[${foundProduct.id_produk}][quantity]`;
                 hiddenInput.value = foundProduct.quantity;
                 cartProductsHidden.appendChild(hiddenInput);
             }
+
             document.getElementById('barcode-input').value = ''; // Clear barcode input
             updateTotal(); // Update the total after adding/updating the product
         } else {
@@ -185,7 +175,7 @@ function updateQuantity(productId, change) {
     if (newQuantity >= 1) {
         quantityInput.value = newQuantity;
         hiddenInput.value = newQuantity;
-        updateTotal(); // Update total setelah perubahan
+        updateTotal(); // Recalculate total after change
     }
 }
 
@@ -197,46 +187,43 @@ function updateHiddenInput(productId) {
     let quantityValue = parseInt(quantityInput.value) || 1;
     if (quantityValue < 1) quantityValue = 1;
     
-    quantityInput.value = quantityValue; // Perbarui input form
-    hiddenInput.value = quantityValue; // Perbarui input hidden
+    quantityInput.value = quantityValue; // Update form input
+    hiddenInput.value = quantityValue; // Update hidden input
 }
 
+// Update total calculation function
+function updateTotal() {
+    let total = 0;
+    let rows = document.querySelectorAll('#cart-products tr');
+    rows.forEach(function(row) {
+        let quantity = row.querySelector('input').value;
+        let price = row.querySelector('td:nth-child(3)').innerText.replace('Rp ', '').replace(',', '');
+        total += quantity * price;
+    });
+    document.querySelector('.total').value = total;
 
+    // Update return calculation based on 'received' value
+    let received = parseFloat(document.querySelector('.received').value) || 0;
+    let kembali = received - total;
+    document.querySelector('.return').value = kembali;
+}
 
+// Add event listener for 'Diterima' (Accept)
+document.querySelector('.received').addEventListener('input', function() {
+    updateTotal(); // Recalculate total and return when 'Diterima' is changed
+});
 
-        // Update total calculation function
-        function updateTotal() {
-            let total = 0;
-            let rows = document.querySelectorAll('#cart-products tr');
-            rows.forEach(function(row) {
-                let quantity = row.querySelector('input').value;
-                let price = row.querySelector('td:nth-child(3)').innerText.replace('Rp ', '').replace(',', '');
-                total += quantity * price;
-            });
-            document.querySelector('.total').value = total;
-
-            // Update kembali (change based on 'accept' value)
-            let received = parseFloat(document.querySelector('.received').value) || 0;
-            let kembali = received - total;
-            document.querySelector('.return').value = kembali;
+// Cancel cart item function
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('cancel-btn')) {
+        let productId = event.target.getAttribute('data-id');
+        let row = document.getElementById(`cart-product-${productId}`);
+        if (row) {
+            row.remove();
+            updateTotal(); 
         }
-
-        // Add event listener for 'Diterima' (Accept)
-        document.querySelector('.received').addEventListener('input', function() {
-            updateTotal(); // Recalculate total and kembali when 'Diterima' is changed
-        });
-
-        // Cancel cart item function
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('cancel-btn')) {
-                let productId = event.target.getAttribute('data-id');
-                let row = document.getElementById(`cart-product-${productId}`);
-                if (row) {
-                    row.remove();
-                    updateTotal(); // Update total after removing item
-                }
-            }
-        });
+    }
+});
 
     </script>
 

@@ -11,11 +11,11 @@ use Illuminate\Http\Request;
 class DetailProductController extends Controller
 {
     public function show($id)
-    {
-        $product = Product::with('detailProduct')->findOrFail($id);
-        dd($product->detailProduct); // Cek apakah relasi berhasil dimuat
-        return view('product.show', compact('product'));
-    }
+{
+    $product = Product::with('detailProduct')->findOrFail($id); // eager load the detailProduct relationship
+    return view('product.show', compact('product'));
+}
+
 
     public function storeDetail(Request $request, $id)
     {

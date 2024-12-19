@@ -16,61 +16,85 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="box">
-                            <form action="{{ route('user.update_profil') }}" method="post" class="form-profil" data-toggle="validator" enctype="multipart/form-data">
-                                @csrf
-                                <div class="box-body">
-                                    <div class="alert alert-info alert-dismissible" style="display: none;">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                        <i class="icon fa fa-check"></i> Perubahan berhasil disimpan
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="name" class="col-lg-2 control-label">Nama</label>
-                                        <div class="col-lg-6">
-                                            <input type="text" name="name" class="form-control" id="name" required autofocus value="{{ $profil->name }}">
-                                            <span class="help-block with-errors"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="foto" class="col-lg-2 control-label">Profil</label>
-                                        <div class="col-lg-4">
-                                            <input type="file" name="foto" class="form-control" id="foto"
-                                                onchange="preview('.tampil-foto', this.files[0])">
-                                            <span class="help-block with-errors"></span>
-                                            <br>
-                                            <div class="tampil-foto">
-                                                <img src="{{ url($profil->foto ?? '/') }}" width="200">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="old_password" class="col-lg-2 control-label">Password Lama</label>
-                                        <div class="col-lg-6">
-                                            <input type="password" name="old_password" id="old_password" class="form-control" 
-                                            minlength="6">
-                                            <span class="help-block with-errors"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="password" class="col-lg-2 control-label">Password Baru</label>
-                                        <div class="col-lg-6">
-                                            <input type="password" name="password" id="password" class="form-control" 
-                                            minlength="6">
-                                            <span class="help-block with-errors"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="password_confirmation" class="col-lg-2 control-label">Konfirmasi Password Baru</label>
-                                        <div class="col-lg-6">
-                                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" 
-                                                data-match="#password">
-                                            <span class="help-block with-errors"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="box-footer text-right">
-                                    <button class="btn btn-sm btn-flat btn-primary"><i class="fa fa-save"></i> Simpan Perubahan</button>
-                                </div>
-                            </form>
+                        <form action="{{ route('user.update_profil') }}" method="post" class="form-profil" data-toggle="validator" enctype="multipart/form-data">
+    @csrf
+    <div class="box-body">
+        <!-- Alert -->
+        <div class="alert alert-info alert-dismissible" style="display: none;">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <i class="icon fa fa-check"></i> Perubahan berhasil disimpan
+        </div>
+
+        <!-- Nama -->
+        <div class="form-group row">
+            <label for="name" class="col-lg-2 control-label">Nama</label>
+            <div class="col-lg-6">
+                <input type="text" name="name" class="form-control" id="name" required autofocus value="{{ $profil->name }}">
+                <span class="help-block with-errors"></span>
+            </div>
+        </div>
+
+        <!-- Foto Profil -->
+        <div class="form-group row">
+            <label for="foto" class="col-lg-2 control-label">Profil</label>
+            <div class="col-lg-6">
+                <div class="custom-file">
+                    <input type="file" name="foto" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" onchange="preview('.tampil-foto', this.files[0])">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="tampil-foto mt-3">
+                    <img src="{{ url($profil->foto ?? '') }}" width="200" alt="Foto Profil">
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Lama -->
+        <div class="form-group row">
+            <label for="old_password" class="col-lg-2 control-label">Password Lama</label>
+            <div class="col-lg-6">
+                <input type="password" name="old_password" id="old_password" class="form-control" minlength="6">
+                <span class="help-block with-errors"></span>
+            </div>
+        </div>
+
+        <!-- Password Baru -->
+        <div class="form-group row">
+            <label for="password" class="col-lg-2 control-label">Password Baru</label>
+            <div class="col-lg-6">
+                <input type="password" name="password" id="password" class="form-control" minlength="6">
+                <span class="help-block with-errors"></span>
+            </div>
+        </div>
+
+        <!-- Konfirmasi Password Baru -->
+        <div class="form-group row">
+            <label for="password_confirmation" class="col-lg-2 control-label">Konfirmasi Password Baru</label>
+            <div class="col-lg-6">
+                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" data-match="#password">
+                <span class="help-block with-errors"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="box-footer text-right">
+        <button class="btn btn-sm btn-flat btn-primary"><i class="fa fa-save"></i> Simpan Perubahan</button>
+    </div>
+</form>
+
+<script>
+    // Script untuk preview foto saat memilih file
+    function preview(target, file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            document.querySelector(target).innerHTML = '<img src="' + e.target.result + '" width="200">';
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+
                         </div>
                     </div>
                 </div>

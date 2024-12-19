@@ -31,39 +31,39 @@
                                     <tbody>
                                     @foreach ($product as $p)
                                         <tr>
-                                            <td>{{ $p->kode }}</td>
+                                            <td>{{ $p->kode_produk }}</td>
                                             <td>{{ $p->nama_produk }}</td>
                                             <td>{{ $p->kategori }}</td>
                                             <td>{{ rupiah($p->harga_produk) }}</td>
-                                            <td>{{ $p->total_stok }}</td>
+                                            <td>{{ $p->stok }}</td>
                                             <td>
-                                                <button type="button" class="btn-sm btn-info d-inline-block" onclick="window.location.href='{{ route('detail_product.show', $p->id) }}'">
+                                                <button type="button" class="btn-sm btn-info d-inline-block" onclick="window.location.href='{{ route('detail_product.show', $p->id_produk) }}'">
                                                     <i class="fa fa-eye"></i>
                                                 </button> 
-                                                <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editProductModal{{ $p->id }}">
+                                                <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editProductModal{{ $p->id_produk }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
-                                                <button type="button" class="btn-sm btn-danger d-inline-block" onclick="deleteConfirm(this); return false;" data-id="{{ $p->id }}">
+                                                <button type="button" class="btn-sm btn-danger d-inline-block" onclick="deleteConfirm(this); return false;" data-id="{{ $p->id_produk }}">
                                                     <i class="fa fa-trash"></i>
                                                 </button>                                               
                                             </td>
                                         </tr>
-                                        <div class="modal fade" id="editProductModal{{ $p->id }}" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel{{ $p->id }}" aria-hidden="true">
+                                        <div class="modal fade" id="editProductModal{{ $p->id_produk }}" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel{{ $p->id_produk }}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="editProductModalLabel{{ $p->id }}">Edit Produk</h5>
+                                                        <h5 class="modal-title" id="editProductModalLabel{{ $p->id_produk }}">Edit Produk</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('product.update', $p->id) }}" method="POST">
+                                                    <form action="{{ route('product.update', $p->id_produk) }}" method="POST">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
                                                             <div class="form-group">
                                                                 <label for="kode">Kode Produk</label>
-                                                                <input type="text" name="kode" class="form-control" value="{{ $p->kode }}" required>
+                                                                <input type="text" name="kode_produk" class="form-control" value="{{ $p->kode_produk }}" required>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="nama_produk">Nama Produk</label>
@@ -131,7 +131,7 @@
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="kode">Kode Produk</label>
-                                            <input type="text" name="kode" class="form-control" required>
+                                            <input type="text" name="kode_produk" class="form-control" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="nama_produk">Nama Produk</label>

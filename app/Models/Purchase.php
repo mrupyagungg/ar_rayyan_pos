@@ -11,11 +11,15 @@ class Purchase extends Model
 {
     use HasFactory;
     protected $table = 'purchase'; // Nama tabel transaksi pembelian
-    protected $fillable = ['id_beli', 'tgl_beli','metode_bayar',  'total_beli', 'id_vendor', 'quantity','total', ];
+    protected $fillable = ['id_beli', 'id','tanggal_beli','metode_bayar',  'stok', 'id_vendor','total', ];
 
-    // Relasi dengan Supplier
-    public function details()
-    {
-        return $this->hasMany(PurchaseDetail::class);
-    }
+    public function supplier()
+{
+    return $this->belongsTo(Supplier::class);
+}
+public function product()
+{
+    return $this->belongsTo(Product::class);
+}
+
 }

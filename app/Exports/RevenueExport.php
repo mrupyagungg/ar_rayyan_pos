@@ -1,42 +1,29 @@
 <?php
-
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class RevenueExport implements FromView
+class RevenueReportExport implements FromView
 {
+    protected $start, $end;
 
-    private $result;
-    private $total_revenue;
+    public function __construct($start, $end)
+    {
+        $this->start = $start;
+        $this->end = $end;
+    }
 
-	/**
-	 * Create a new exporter instance.
-	 *
-	 * @param array $results query result
-	 *
-	 * @return void
-	 */
-	public function __construct($results, $total)
-	{
-        $this->result = $results;
-        $this->total_revenue =  $total;
-	}
+    public function view(): View
+    {
+        // Ambil data laporan
+        $reports = Revenue::whereBetween('date', [$this->start, $this->end])->get();
 
-	/**
-	 * Load the view.
-	 *
-	 * @return void
-	 */
-	public function view(): View
-	{
-		return view(
-			'reports.exports.revenue-excel',
-			[
-                'reports' => $this->result,
-                'total_revenue' => $this->total_revenue,
-			]
-		);
-	}
+        $total_revenue = $reports->sum('revenue');
+
+        return view('exports.revenue_report', [
+            'reports' => $reports,
+            'total_revenue' => $total_revenue
+        ]);
+    }
 }

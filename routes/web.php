@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PurchaseController;
+use  App\Http\Controllers\ReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,11 +47,11 @@ Route::resource('product', App\Http\Controllers\ProductController::class)->middl
 Route::get('/product/destroy/{id}', [App\Http\Controllers\ProductController::class,'destroy'])->middleware(['auth']);
 
 // detail produk
-Route::get('detail_product/{id}', [App\Http\Controllers\ProductController::class, 'show'])->name('detail_product.show');
-Route::post('product/{id}/detail', [App\Http\Controllers\DetailProductController::class, 'storeDetail'])->name('product.storeDetail');
-Route::get('product/detail/{id}/edit', [App\Http\Controllers\DetailProductController::class, 'editDetail'])->name('product.editDetail');
-Route::put('product/detail/{id}', [App\Http\Controllers\DetailProductController::class, 'updateDetail'])->name('product.updateDetail');
-Route::get('/detail_product/destroy/{id}', [App\Http\Controllers\DetailProductController::class,'destroy'])->middleware(['auth']);
+Route::get('detail_product/{id_produk}', [App\Http\Controllers\ProductController::class, 'show'])->name('detail_product.show');
+Route::post('product/{id_produk}/detail', [App\Http\Controllers\DetailProductController::class, 'storeDetail'])->name('product.storeDetail');
+Route::get('product/detail/{id_produk}/edit', [App\Http\Controllers\DetailProductController::class, 'editDetail'])->name('product.editDetail');
+Route::put('product/detail/{id_produk}', [App\Http\Controllers\DetailProductController::class, 'updateDetail'])->name('product.updateDetail');
+Route::get('/detail_product/destroy/{id_produk}', [App\Http\Controllers\DetailProductController::class,'destroy'])->middleware(['auth']);
 
 Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 Route::post('/purchase/store', [PurchaseController::class, 'store'])->name('purchase.store');
@@ -102,4 +103,7 @@ Route::get('grafik/viewPenjualanBlnBerjalan', [App\Http\Controllers\GrafikContro
 
 // calendar
 Route::get('fullcalendar', [\App\Http\Controllers\FullcalendarController::class, 'index'])->name('fullcalendar');
+
+Route::get('reports/revenue/export', [ReportController::class, 'export'])->name('reports.revenue.export');
+
 require __DIR__.'/auth.php';

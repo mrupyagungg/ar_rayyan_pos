@@ -34,8 +34,8 @@ class PurchaseController extends Controller
     public function store(Request $request)
 {
     $validated = $request->validate([
-        'supplier_id' => 'required|exists:suppliers,id',
-        'tgl_beli' => 'required|date',
+        'supplier_id' => 'required|exists:supplier,id',
+        'tanggal_beli' => 'required|date',
         'metode_bayar' => 'required|in:Tunai,Transfer',
         'products' => 'required|array',
         'products.*.quantity' => 'required|integer|min:1',
@@ -46,7 +46,7 @@ class PurchaseController extends Controller
         // Simpan data pembelian ke tabel 'purchases'
         $purchase = Purchase::create([
             'supplier_id' => $validated['supplier_id'],
-            'tgl_beli' => $validated['tgl_beli'],
+            'tanggal_beli' => $validated['tanggal_beli'],
             'metode_bayar' => $validated['metode_bayar'],
             'total' => $validated['total'],
         ]);

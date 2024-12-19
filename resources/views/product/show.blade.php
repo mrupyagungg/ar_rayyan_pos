@@ -13,7 +13,7 @@
             <!--Datatable-->
             <div class="card">
                 <div class="card-body p-3">
-                    <p><strong>Kode:</strong> {{ $product->kode }}</p>
+                    <p><strong>Kode:</strong> {{ $product->kode_produk }}</p>
                     <p><strong>Nama Produk:</strong> {{ $product->nama_produk }}</p>
                     <p><strong>Kategori:</strong> {{ $product->kategori }}</p>
 

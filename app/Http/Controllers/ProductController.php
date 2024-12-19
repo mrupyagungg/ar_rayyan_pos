@@ -29,18 +29,18 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode' => 'required',
+            'kode_produk' => 'required',
             'nama_produk' => 'required',
             'kategori' => 'required',
             'harga_produk' => 'required|numeric',
             'stok' => 'required|numeric',
         ]);
-        $duplicate = Product::where('kode', $request->input('kode'))->exists();
+        $duplicate = Product::where('kode_produk', $request->input('kode_produk'))->exists();
 
         if ($duplicate) {
-            // Jika kode akun sudah ada, redirect kembali dengan pesan error
+            // Jika kode_produk akun sudah ada, redirect kembali dengan pesan error
             $notification = array(
-                'message' => 'Kode produk sudah ada!',
+                'message' => 'Kode_produk produk sudah ada!',
                 'alert-type' => 'error'
             );
             return redirect()->route('product.index')->with($notification);
@@ -65,20 +65,20 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'kode' => 'required',
+            'kode_produk' => 'required',
             'nama_produk' => 'required',
             'kategori' => 'required',
             'harga_produk' => 'required|numeric',
             'stok' => 'required|numeric',
         ]);
 
-        $duplicate = Product::where('kode', $request->input('kode'))
+        $duplicate = Product::where('kode_produk', $request->input('kode_produk'))
                         ->where('id', '!=', $id) 
                         ->exists();
 
         if ($duplicate) {
             $notification = array(
-                'message' => 'Kode produk sudah ada!',
+                'message' => 'Kode_produk produk sudah ada!',
                 'alert-type' => 'error'
             );
             return redirect()->route('product.index')->with($notification);
